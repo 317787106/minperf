@@ -46,3 +46,45 @@ tasks.build {
 tasks.named('jar') {
     enabled = false
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            groupId = project.group
+            artifactId = 'minperf'
+            version = project.version
+
+            pom {
+                name = 'minperf'
+                description = 'A minimal perfect hash function implementation'
+                url = 'https://github.com/317787106/minperf'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name = 'The Tron Protocol'
+                        email = '317787106@qq.com'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/317787106/minperf.git'
+                    developerConnection = 'scm:git:ssh://github.com/317787106/minperf.git'
+                    url = 'https://github.com/317787106/minperf'
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
