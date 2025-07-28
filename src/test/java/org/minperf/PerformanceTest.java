@@ -86,7 +86,7 @@ public class PerformanceTest {
         long time = System.nanoTime() - start;
 
         int bits = data.length * 8;
-        System.out.printf("Generated in %.2f seconds at %.2f bits/key, using %s\n",
+        System.out.printf("Generated in %.2f seconds at %.2f bits/key, using %s%n",
                 time / 1_000_000_000., (double) bits / size,
                 hash);
 
@@ -129,7 +129,7 @@ public class PerformanceTest {
             time = System.nanoTime() - start;
             System.out.printf("Evaluation time: %d nanoseconds/key, " +
                     "universalHash: %f calls/key \n",
-                    (int) (((double) time / repeat / size)),
+                    (int) ((double) time / repeat / size),
                     (double) count.getCount() / size);
         }
     }

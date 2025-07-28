@@ -5,57 +5,57 @@ package org.minperf;
  */
 public class FunctionInfo {
 
-    int size;
-    int split;
-    int firstPartSize;
-    int leafSize;
-    int averageBucketSize;
-    public double bitsPerKey;
-    public double generateNanos;
-    double evaluateNanos;
-    public long hashCalls;
+  int size;
+  int split;
+  int firstPartSize;
+  int leafSize;
+  int averageBucketSize;
+  public double bitsPerKey;
+  public double generateNanos;
+  double evaluateNanos;
+  public long hashCalls;
 
-    @Override
-    public String toString() {
-        String s = "size " + size +
-                " leafSize " + leafSize +
-                " bits/key " + bitsPerKey +
-                " generate " + generateNanos +
-                " evaluate " + evaluateNanos;
-        if (averageBucketSize > 0) {
-            s += " averageBucketSize " + averageBucketSize;
-        }
-        if (split != 0) {
-            s += " split " +
-                    (split > 0 ? split : (-split + ":" + (size + split)));
-        }
-        return s;
+  @Override
+  public String toString() {
+    String s = "size " + size +
+        " leafSize " + leafSize +
+        " bits/key " + bitsPerKey +
+        " generate " + generateNanos +
+        " evaluate " + evaluateNanos;
+    if (averageBucketSize > 0) {
+      s += " averageBucketSize " + averageBucketSize;
     }
+    if (split != 0) {
+      s += " split " +
+          (split > 0 ? split : (-split + ":" + (size + split)));
+    }
+    return s;
+  }
 
-    @Override
-    public int hashCode() {
-        return leafSize ^ averageBucketSize ^ (int) Double.doubleToLongBits(bitsPerKey);
-    }
+  @Override
+  public int hashCode() {
+    return leafSize ^ averageBucketSize ^ (int) Double.doubleToLongBits(bitsPerKey);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof FunctionInfo)) {
-            return false;
-        }
-        FunctionInfo other = (FunctionInfo) o;
-        if (bitsPerKey != other.bitsPerKey) {
-            return false;
-        }
-        if (leafSize != other.leafSize) {
-            return false;
-        }
-        if (averageBucketSize != other.averageBucketSize) {
-            return false;
-        }
-        return true;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (!(o instanceof FunctionInfo)) {
+      return false;
+    }
+    FunctionInfo other = (FunctionInfo) o;
+    if (bitsPerKey != other.bitsPerKey) {
+      return false;
+    }
+    if (leafSize != other.leafSize) {
+      return false;
+    }
+    if (averageBucketSize != other.averageBucketSize) {
+      return false;
+    }
+    return true;
+  }
 
 }

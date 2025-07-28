@@ -9,37 +9,37 @@ import java.util.concurrent.ForkJoinTask;
  */
 public class ConcurrencyTool {
 
-    private final ForkJoinPool pool;
+  private final ForkJoinPool pool;
 
-    public ConcurrencyTool(int parallelism) {
-        if (parallelism > 1) {
-            pool = new ForkJoinPool(parallelism);
-        } else {
-            pool = null;
-        }
+  public ConcurrencyTool(int parallelism) {
+    if (parallelism > 1) {
+      pool = new ForkJoinPool(parallelism);
+    } else {
+      pool = null;
     }
+  }
 
-    public <T> T invoke(ForkJoinTask<T> task) {
-        if (pool != null) {
-            return pool.invoke(task);
-        }
-        return task.invoke();
+  public <T> T invoke(ForkJoinTask<T> task) {
+    if (pool != null) {
+      return pool.invoke(task);
     }
+    return task.invoke();
+  }
 
-    public void invokeAll(ForkJoinTask<?>... tasks) {
-        if (pool != null) {
-            ForkJoinTask.invokeAll(tasks);
-            return;
-        }
-        for (ForkJoinTask<?> t : tasks) {
-            t.invoke();
-        }
+  public void invokeAll(ForkJoinTask<?>... tasks) {
+    if (pool != null) {
+      ForkJoinTask.invokeAll(tasks);
+      return;
     }
+    for (ForkJoinTask<?> t : tasks) {
+      t.invoke();
+    }
+  }
 
-    public void shutdown() {
-        if (pool != null) {
-            pool.shutdown();
-        }
+  public void shutdown() {
+    if (pool != null) {
+      pool.shutdown();
     }
+  }
 
 }

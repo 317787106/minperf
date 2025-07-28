@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1' // 用于生成 uberjar
+}
+
+group = 'io.github.317787106'
+version = '1.0-SNAPSHOT'
+
+def jarName = 'minperf'
+
+mainClassName = 'org.minperf.hash.HashPerformanceTest'
+
+repositories {
+    mavenLocal()
+    maven {
+        url "https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
+    }
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.1'
+}
+
+
+shadowJar {
+    archiveBaseName.set(jarName)
+    archiveClassifier.set('') // 不加 -all 后缀
+    archiveVersion.set('')    // 不加版本号
+    mergeServiceFiles()
+}
+
+tasks.build {
+    dependsOn shadowJar
+}

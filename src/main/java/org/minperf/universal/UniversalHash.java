@@ -13,13 +13,13 @@ package org.minperf.universal;
  */
 public interface UniversalHash<T> {
 
-    /**
-     * Calculate the hash of the given object.
-     *
-     * @param key the key in the set
-     * @param index the hash function index (0, 1, 2,...)
-     * @return the universal hash (64 bits)
-     */
-    long universalHash(T key, long index);
+  /**
+   * Calculate the hash of the given object.
+   *
+   * @param key the key in the set
+   * @param index the hash function index (0, 1, 2,...)
+   * @return the universal hash (64 bits)
+   */
+  long universalHash(T key, long index);
 
 }

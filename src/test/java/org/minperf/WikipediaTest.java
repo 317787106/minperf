@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
-
 import org.junit.Assert;
 import org.minperf.utils.Text;
 
@@ -16,55 +15,55 @@ import org.minperf.utils.Text;
  */
 public class WikipediaTest {
 
-    /**
-     * Run just this test.
-     *
-     * @param a ignored
-     */
-    public static void main(String... a) {
-        try {
-            if (!largeFileWithUniqueEntries(System.getProperty("user.home") + "/data/hash/mphf/" +
-                    "enwiki-20160305-all-titles.unique.txt")) {
-                largeFile(System.getProperty("user.home") + "/data/hash/mphf/" +
-                        "enwiki-20160305-all-titles");
-            }
+  /**
+   * Run just this test.
+   *
+   * @param a ignored
+   */
+  public static void main(String... a) {
+    try {
+      if (!largeFileWithUniqueEntries(System.getProperty("user.home") + "/data/hash/mphf/" +
+          "enwiki-20160305-all-titles.unique.txt")) {
+        largeFile(System.getProperty("user.home") + "/data/hash/mphf/" +
+            "enwiki-20160305-all-titles");
+      }
 //            FunctionInfo info = RandomizedTest.test(leafSize, averageBucketSize, list.size(), false);
 //            System.out.println("random data: " + info.bitsPerKey + " bits/key");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    private static boolean largeFileWithUniqueEntries(String fileName) throws IOException {
-        if (!new File(fileName).exists()) {
-            System.out.println("not found: " + fileName);
-            return false;
-        }
-        RandomAccessFile f = new RandomAccessFile(fileName, "r");
-        byte[] data = new byte[(int) f.length()];
-        f.readFully(data);
-        ArrayList<Text> list = new ArrayList<Text>(30 * 1024 * 1024);
-        int end = Text.indexOf(data, 0, '\n');
-        Text t = new Text(data, 0, end);
-        long time = System.currentTimeMillis();
-        while (true) {
-            list.add(t);
-            if (end >= data.length - 1) {
-                break;
-            }
-            int start = end + 1;
-            end = Text.indexOf(data, start, '\n');
-            t = new Text(data, start, end - start);
-            long now = System.currentTimeMillis();
-            if (now - time > 2000) {
-                System.out.println("size: " + list.size());
-                time = now;
-            }
-        }
-        System.out.println("file: " + fileName);
+  private static boolean largeFileWithUniqueEntries(String fileName) throws IOException {
+    if (!new File(fileName).exists()) {
+      System.out.println("not found: " + fileName);
+      return false;
+    }
+    RandomAccessFile f = new RandomAccessFile(fileName, "r");
+    byte[] data = new byte[(int) f.length()];
+    f.readFully(data);
+    ArrayList<Text> list = new ArrayList<Text>(30 * 1024 * 1024);
+    int end = Text.indexOf(data, 0, '\n');
+    Text t = new Text(data, 0, end);
+    long time = System.currentTimeMillis();
+    while (true) {
+      list.add(t);
+      if (end >= data.length - 1) {
+        break;
+      }
+      int start = end + 1;
+      end = Text.indexOf(data, start, '\n');
+      t = new Text(data, start, end - start);
+      long now = System.currentTimeMillis();
+      if (now - time > 2000) {
         System.out.println("size: " + list.size());
+        time = now;
+      }
+    }
+    System.out.println("file: " + fileName);
+    System.out.println("size: " + list.size());
 
-      int[] pairs = new int[] {
+    int[] pairs = new int[] {
 //              5, 20,
 //              6, 12,
 //              6, 14,
@@ -97,8 +96,8 @@ public class WikipediaTest {
 //              11, 256,
 //              12, 64,
 
-              5, 16,
-              6, 20,
+        5, 16,
+        6, 20,
 //              14, 192,
 //              14, 256,
 //              14, 512,
@@ -106,15 +105,14 @@ public class WikipediaTest {
 //              15, 512, // slow
 //              15, 1024, // slow
 //              16, 1024, // slow
-          };
+    };
 
-        for (int i = 0; i < pairs.length; i += 2) {
-            int leafSize = pairs[i], averageBucketSize = pairs[i + 1];
-            test(list, leafSize, averageBucketSize);
-        }
+    for (int i = 0; i < pairs.length; i += 2) {
+      int leafSize = pairs[i], averageBucketSize = pairs[i + 1];
+      test(list, leafSize, averageBucketSize);
+    }
 
-
-        // 1 thread
+    // 1 thread
 //        5, 20, 2.2934250358455595, 1257, 334,
 //        6, 20, 2.2301333899505726, 1177, 338,
 //        7, 16, 2.2056644551315054, 1459, 316,
@@ -157,118 +155,118 @@ public class WikipediaTest {
 //        test(list, 6, 512);
 //        test(list, 8, 1024);
 //        test(list, 10, 2048);
-        return true;
-    }
+    return true;
+  }
 
-    private static void largeFile(String fileName) throws IOException {
-        if (!new File(fileName).exists()) {
-            System.out.println("not found: " + fileName);
-            return;
-        }
-        RandomAccessFile f = new RandomAccessFile(fileName, "r");
-        byte[] data = new byte[(int) f.length()];
-        f.readFully(data);
-        HashSet<Text> set = new HashSet<Text>(40 * 1024 * 1024);
-        int end = Text.indexOf(data, 0, '\n');
-        Text t = new Text(data, 0, end);
-        long time = System.currentTimeMillis();
-        while (true) {
-            set.add(t);
-            if (end >= data.length - 1) {
-                break;
-            }
-            int start = end + 1;
-            end = Text.indexOf(data, start, '\n');
-            t = new Text(data, start, end - start);
-            long now = System.currentTimeMillis();
-            if (now - time > 2000) {
-                System.out.println("size: " + set.size());
-                time = now;
-            }
-        }
-        System.out.println("file: " + fileName);
+  private static void largeFile(String fileName) throws IOException {
+    if (!new File(fileName).exists()) {
+      System.out.println("not found: " + fileName);
+      return;
+    }
+    RandomAccessFile f = new RandomAccessFile(fileName, "r");
+    byte[] data = new byte[(int) f.length()];
+    f.readFully(data);
+    HashSet<Text> set = new HashSet<Text>(40 * 1024 * 1024);
+    int end = Text.indexOf(data, 0, '\n');
+    Text t = new Text(data, 0, end);
+    long time = System.currentTimeMillis();
+    while (true) {
+      set.add(t);
+      if (end >= data.length - 1) {
+        break;
+      }
+      int start = end + 1;
+      end = Text.indexOf(data, start, '\n');
+      t = new Text(data, start, end - start);
+      long now = System.currentTimeMillis();
+      if (now - time > 2000) {
         System.out.println("size: " + set.size());
-
-        test(set, 8, 14);
-        test(set, 8, 10);
-        test(set, 8, 16);
-        test(set, 8, 12);
+        time = now;
+      }
     }
+    System.out.println("file: " + fileName);
+    System.out.println("size: " + set.size());
 
-    private static void test(Collection<Text> set, int leafSize, int averageBucketSize) {
-        long size = set.size();
-        long time = System.nanoTime();
-        byte[] desc = RecSplitBuilder.
-                newInstance(new Text.UniversalTextHash()).
-                leafSize(leafSize).
-                averageBucketSize(averageBucketSize).
-                generate(set).toByteArray();
-        time = System.nanoTime() - time;
-        long generateNanos = time / size;
-        // System.out.println("generate nanos: " + generateNanos);
-        int bits = desc.length * 8;
-        double bitsPerKey = (double) bits / set.size();
-        RecSplitEvaluator<Text> eval = RecSplitBuilder
-                .newInstance(new Text.UniversalTextHash()).leafSize(leafSize)
-                .averageBucketSize(averageBucketSize).buildEvaluator(new BitBuffer(desc));
-        long evaluateNanos = test(set, eval);
-        System.out.println("  " + leafSize + ", " +
-                averageBucketSize + ", " + bitsPerKey + ", " +
-                generateNanos + ", " + evaluateNanos + ",");
+    test(set, 8, 14);
+    test(set, 8, 10);
+    test(set, 8, 16);
+    test(set, 8, 12);
+  }
+
+  private static void test(Collection<Text> set, int leafSize, int averageBucketSize) {
+    long size = set.size();
+    long time = System.nanoTime();
+    byte[] desc = RecSplitBuilder.
+        newInstance(new Text.UniversalTextHash()).
+        leafSize(leafSize).
+        averageBucketSize(averageBucketSize).
+        generate(set).toByteArray();
+    time = System.nanoTime() - time;
+    long generateNanos = time / size;
+    // System.out.println("generate nanos: " + generateNanos);
+    int bits = desc.length * 8;
+    double bitsPerKey = (double) bits / set.size();
+    RecSplitEvaluator<Text> eval = RecSplitBuilder
+        .newInstance(new Text.UniversalTextHash()).leafSize(leafSize)
+        .averageBucketSize(averageBucketSize).buildEvaluator(new BitBuffer(desc));
+    long evaluateNanos = test(set, eval);
+    System.out.println("  " + leafSize + ", " +
+        averageBucketSize + ", " + bitsPerKey + ", " +
+        generateNanos + ", " + evaluateNanos + ",");
 //        System.out.println("evaluate");
 //        System.out.println("        % leafSize " + leafSize + " averageBucketSize " + averageBucketSize);
 //        System.out.println("        (" + bitsPerKey + ", " + evaluateNanos + ")");
 //        System.out.println("generate");
 //        System.out.println("        % leafSize " + leafSize + " averageBucketSize " + averageBucketSize);
 //        System.out.println("        (" + bitsPerKey + ", " + generateNanos + ")");
-    }
+  }
 
-    private static <T> long test(Collection<T> set, RecSplitEvaluator<T> eval) {
-        BitSet known = new BitSet();
-        int size = set.size();
-        // verify
-        for (T x : set) {
-            int index = eval.evaluate(x);
-            if (index > set.size() || index < 0) {
-                Assert.fail("wrong entry: " + x + " " + index);
-            }
-            if (known.get(index)) {
-                Assert.fail("duplicate entry: " + x + " " + index);
-            }
-            known.set(index);
-        }
-        // the the CPU cool
-        try {
-            Thread.sleep(10 * 1000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // measure
-        // Profiler prof = new Profiler().startCollecting();
-        long best = Long.MAX_VALUE;
-        ArrayList<T> list = new ArrayList<T>(set);
-        for (int i = 0; i < 10; i++) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            long evalNanos = System.nanoTime();
-            for (T x : list) {
-                int index = eval.evaluate(x);
-                if (index > list.size() || index < 0) {
-                    Assert.fail("wrong entry: " + x + " " + index);
-                }
-            }
-            evalNanos = System.nanoTime() - evalNanos;
-            long evaluateNanos = evalNanos / size;
-            // System.out.println("evaluate: " + evaluateNanos);
-            best = Math.min(best, evaluateNanos);
-        }
-        // System.out.println(prof.getTop(5));
-        return best;
-        // System.out.println(prof.getTop(5));
+  private static <T> long test(Collection<T> set, RecSplitEvaluator<T> eval) {
+    BitSet known = new BitSet();
+    int size = set.size();
+    // verify
+    for (T x : set) {
+      int index = eval.evaluate(x);
+      if (index > set.size() || index < 0) {
+        Assert.fail("wrong entry: " + x + " " + index);
+      }
+      if (known.get(index)) {
+        Assert.fail("duplicate entry: " + x + " " + index);
+      }
+      known.set(index);
     }
+    // the the CPU cool
+    try {
+      Thread.sleep(10 * 1000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    // measure
+    // Profiler prof = new Profiler().startCollecting();
+    long best = Long.MAX_VALUE;
+    ArrayList<T> list = new ArrayList<T>(set);
+    for (int i = 0; i < 10; i++) {
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      long evalNanos = System.nanoTime();
+      for (T x : list) {
+        int index = eval.evaluate(x);
+        if (index > list.size() || index < 0) {
+          Assert.fail("wrong entry: " + x + " " + index);
+        }
+      }
+      evalNanos = System.nanoTime() - evalNanos;
+      long evaluateNanos = evalNanos / size;
+      // System.out.println("evaluate: " + evaluateNanos);
+      best = Math.min(best, evaluateNanos);
+    }
+    // System.out.println(prof.getTop(5));
+    return best;
+    // System.out.println(prof.getTop(5));
+  }
 
 }
