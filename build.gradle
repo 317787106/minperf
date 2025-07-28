@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'maven-publish'
 }
 
 group = 'io.github.317787106'
@@ -31,7 +32,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
 }
 
-
 shadowJar {
     archiveBaseName.set(jarName)
     archiveClassifier.set('')
@@ -41,4 +41,8 @@ shadowJar {
 
 tasks.build {
     dependsOn shadowJar
+}
+
+tasks.named('jar') {
+    enabled = false
 }
