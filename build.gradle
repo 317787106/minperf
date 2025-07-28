@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1' // 用于生成 uberjar
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'io.github.317787106'
@@ -34,8 +34,8 @@ dependencies {
 
 shadowJar {
     archiveBaseName.set(jarName)
-    archiveClassifier.set('') // 不加 -all 后缀
-    archiveVersion.set('')    // 不加版本号
+    archiveClassifier.set('')
+    archiveVersion.set('')
     mergeServiceFiles()
 }
 
