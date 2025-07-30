@@ -1,14 +1,20 @@
-plugins {
-    id 'java'
-    id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'maven-publish'
-}
-
 group = 'io.github.317787106'
 version = '0.1'
 
-def jarName = 'minperf'
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'application'
 
 mainClassName = 'org.minperf.hash.HashPerformanceTest'
 
@@ -23,6 +29,25 @@ repositories {
     mavenCentral()
 }
 
+buildscript {
+    repositories {
+        mavenLocal()
+        maven {
+            url "https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.1'
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.1'
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -33,58 +58,51 @@ dependencies {
 }
 
 shadowJar {
-    archiveBaseName.set(jarName)
-    archiveClassifier.set('')
-    archiveVersion.set('')
-    mergeServiceFiles()
+    baseName = 'minperf'
+    classifier = null
+    version = null
+    zip64 = true
 }
 
-tasks.build {
-    dependsOn shadowJar
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    [compileJava]*.options*.encoding = 'UTF-8'
+}
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    [compileTestJava]*.options*.encoding = 'UTF-8'
 }
 
-tasks.named('jar') {
-    enabled = false
+tasks.register('sourcesJar', Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
+tasks.register('javadocJar', Jar) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
 
-            groupId = project.group
-            artifactId = 'minperf'
-            version = project.version
+javadoc {
+    description = "Generates project-level javadoc for use in -javadoc jar"
 
-            pom {
-                name = 'minperf'
-                description = 'A minimal perfect hash function implementation'
-                url = 'https://github.com/317787106/minperf'
+    options.memberLevel = JavadocMemberLevel.PROTECTED
+    options.author = true
+    options.version = true
+    options.header = project.name
+    options.addStringOption('Xdoclint:none', '-quiet')
 
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
+    // suppress warnings due to cross-module @see and @link references;
+    // note that global 'api' task does display all warnings.
+    logging.captureStandardError LogLevel.INFO
+    logging.captureStandardOutput LogLevel.INFO // suppress "## warnings" message
+    options.encoding = "UTF-8"
+    options.charSet = 'UTF-8'
+}
 
-                developers {
-                    developer {
-                        name = 'The Tron Protocol'
-                        email = '317787106@qq.com'
-                    }
-                }
-
-                scm {
-                    connection = 'scm:git:git://github.com/317787106/minperf.git'
-                    developerConnection = 'scm:git:ssh://github.com/317787106/minperf.git'
-                    url = 'https://github.com/317787106/minperf'
-                }
-            }
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
+artifacts {
+    archives javadocJar, sourcesJar
 }
