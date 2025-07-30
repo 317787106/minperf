@@ -3,6 +3,7 @@ package org.minperf.generator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.RecursiveAction;
 import org.minperf.BitBuffer;
 import org.minperf.Settings;
@@ -56,6 +57,7 @@ public class Generator<T> {
 //        num_split_count++;
     while (true) {
       if (Settings.needNewUniversalHashIndex(index)) {
+        // never reach here
         long x = Settings.getUniversalHashIndex(index);
         for (int i = 0; i < size; i++) {
           hashes[i] = hash.universalHash(data[i], x);
@@ -230,7 +232,7 @@ public class Generator<T> {
   public BitBuffer generate(Collection<T> collection) {
     long size = collection.size();
     int bucketCount = Settings.getBucketCount(size, settings.getAverageBucketSize());
-    ArrayList<Bucket> buckets = new ArrayList<Bucket>(bucketCount);
+    ArrayList<Bucket> buckets = new ArrayList<>(bucketCount);
     int averageBucketSize = settings.getAverageBucketSize();
     if (size <= maxChunkSize || bucketCount == 1) {
       for (int i = 0; i < bucketCount; i++) {
@@ -329,6 +331,7 @@ public class Generator<T> {
       alt = BDZ.generate(hash, alternativeList);
     }
 
+    //serialize the RecSplitEvaluator and can be used again
     int bitCount = BitBuffer.getEliasDeltaSize(size + 1);
     bitCount += 1;
     bitCount += BitBuffer.getEliasDeltaSize(minOffsetDiff + 1);
@@ -438,7 +441,7 @@ public class Generator<T> {
       return "" + entryCount;
     }
 
-    public void moveToAlternative(ArrayList<T> alternativeList) {
+    public void moveToAlternative(List<T> alternativeList) {
       if (alternative) {
         alternativeList.addAll(list);
         list = null;
